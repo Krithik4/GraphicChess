@@ -1,7 +1,7 @@
 package main;
 
 import javax.swing.JFrame;
-
+//hi there
 /*
  Things to do
  Get pieces to move smoothly
