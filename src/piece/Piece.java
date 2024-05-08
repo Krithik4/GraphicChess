@@ -61,10 +61,10 @@ public class Piece {
             }
         }
 
-        x = getX(col);
-        y = getY(row);
-        preCol = getCol(x);
-        preRow = getRow(y);
+        this.x = getX(col);
+        this.y = getY(row);
+        preCol = getCol(this.x);
+        preRow = getRow(this.y);
         moved = true;
     }
 

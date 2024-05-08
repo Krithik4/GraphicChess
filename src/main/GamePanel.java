@@ -42,7 +42,6 @@ public class GamePanel extends JPanel implements Runnable {
 
         setPieces();
         copyPieces(pieces, simPieces);
-        System.out.println(simPieces.size());
     }
 
     public void launchGame(){
@@ -106,24 +105,26 @@ public class GamePanel extends JPanel implements Runnable {
         if (promotion){
             promoting();
         } else if (!gameOver && !stalemate){
-            if (userMouse.pressed){
-                if (currPiece == null){
-                    for (Piece piece : simPieces){
-                        if (piece.color == currentColor && piece.col == userMouse.x/Board.SQUARE_SIZE && piece.row == userMouse.y/Board.SQUARE_SIZE){
+            if (userMouse.pressed) {
+                if (currPiece == null) {
+                    for (Piece piece : simPieces) {
+                        if (piece.color == currentColor && piece.col == userMouse.x / Board.SQUARE_SIZE && piece.row == userMouse.y / Board.SQUARE_SIZE) {
                             currPiece = piece;
                         }
                     }
+                } else {
+                    simulate();
                 }
-            } else {
-                simulate();
             }
 
             //just teleports, doesnt move smoothly********
             if (!userMouse.pressed){
                 if (currPiece != null){
                     if (validSquare){
-                        copyPieces(simPieces, pieces); //hmm
                         currPiece.updatePosition();
+                        copyPieces(simPieces, pieces); //hmm
+
+
                         if (castlingP != null){
                             castlingP.updatePosition();
                         }
