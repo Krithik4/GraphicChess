@@ -20,6 +20,7 @@ public class Pawn extends Piece {
 
     /**
      * This determines whether the pawn can move to the destination based on its current location
+     * This iterates through the pieces list of the game panel to check for en passant
      * It also includes en passant
      * @param targetCol The destination column
      * @param targetRow The destination row

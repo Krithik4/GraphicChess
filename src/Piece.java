@@ -152,6 +152,7 @@ public class Piece {
 
     /**
      * This determines what piece is being captured based on a destination location
+     * This iterates through the pieces list of the game panel class
      * @param targetCol The destination column
      * @param targetRow The destination row
      * @return the piece being captured (null if no piece is captured)
@@ -188,7 +189,7 @@ public class Piece {
 
     /**
      * This determines the index of the piece in the list of pieces
-     * The static variable simPieces does not change, it is only iterated through
+     * The static variable for the pieces list does not change, it is only iterated through
      * @return the index of the piece
      */
     public int getIndex(){
@@ -222,6 +223,7 @@ public class Piece {
 
     /**
      * This determines if there is a piece in any horizontal path in the way of the destination location
+     * The pieces list from the game panel class is iterated through
      * @param targetCol The destination column
      * @param targetRow The destination row
      * @return if there is piece obstructing any horizontal path
@@ -248,6 +250,7 @@ public class Piece {
 
     /**
      * This determines if there is a piece in any vertical path in the way of the destination location
+     * The pieces list from the game panel class is iterated through
      * @param targetCol The destination column
      * @param targetRow The destination row
      * @return if there is piece obstructing any vertical path
@@ -284,6 +287,7 @@ public class Piece {
 
     /**
      * This determines if there is a piece in any upper diagonal path in the way of the destination location
+     * The pieces list from the game panel class is iterated through
      * @param targetCol The destination column
      * @param targetRow The destination row
      * @return if there is piece obstructing any upper diagonal path
@@ -315,6 +319,7 @@ public class Piece {
 
     /**
      * This determines if there is a piece in any lower diagonal path in the way of the destination location
+     * The pieces list from the game panel class is iterated through
      * @param targetCol The destination column
      * @param targetRow The destination row
      * @return if there is piece obstructing any lower diagonal path

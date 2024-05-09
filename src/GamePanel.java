@@ -10,7 +10,9 @@ import java.awt.AlphaComposite;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-
+/**
+ * This class represents the game that is displayed in the JFrame window
+ */
 public class GamePanel extends JPanel implements Runnable {
     public static final int WIDTH = 750;
     public static final int HEIGHT = 480;
@@ -28,7 +30,7 @@ public class GamePanel extends JPanel implements Runnable {
     public static LinkedList<Piece> simPieces = new LinkedList<>();
     private ArrayList<Piece> promoPieces;
     private Piece currPiece, checkingP;
-    public static Piece castlingP; //hmm
+    public static Piece castlingP;
 
     private boolean canMove;
     private boolean validSquare;
@@ -36,6 +38,9 @@ public class GamePanel extends JPanel implements Runnable {
     private boolean gameOver;
     private boolean stalemate;
 
+    /**
+     * This initializes an instance of the GamePanel class by setting up the panel and configuring mouse input
+     */
     public GamePanel(){
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(Color.BLACK);
@@ -49,14 +54,26 @@ public class GamePanel extends JPanel implements Runnable {
         copyPieces(pieces, simPieces);
     }
 
+    /**
+     * This method sets the piece that needs to be castled
+     * castlingP is modified to whatever the parameter is
+     * @param p The new castling piece
+     */
     public static void setCastlingP(Piece p){
         castlingP = p;
     }
+
+    /**
+     * This method starts the game
+     */
     public void launchGame(){
         gameThread = new Thread(this);
         gameThread.start();
     }
 
+    /**
+     * This continuously updates the panel using a game loop
+     */
     @Override
     public void run() {
         double drawInterval = 1000000000/60;
@@ -75,6 +92,9 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * This sets the pieces on the board at their proper locations
+     */
     private void setPieces(){
         for (int i = 0; i < 8; i++){
             pieces.add(new Pawn(WHITE, i, 6));
@@ -101,6 +121,11 @@ public class GamePanel extends JPanel implements Runnable {
         pieces.add(new King(BLACK, 4, 0));
     }
 
+    /**
+     * This method copies pieces from one list to another list
+     * @param from The original list
+     * @param to The destination list
+     */
     private void copyPieces(LinkedList<Piece> from, LinkedList<Piece> to){
         to.clear();
         for (Piece piece : from) {
@@ -108,6 +133,11 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * This method determines what is outputted to the window
+     * It registers piece movement and also shows promotion
+     * Nothing happens if the game is over or if it is stalemate
+     */
     private void update(){
         if (promotion){
             promoting();
@@ -129,11 +159,15 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * This method determines what happens after the mouse is released
+     * The piece can update position and several message appear is certain cases occur (i. e. check)
+     */
     public void updatePieceAfterMouseRelease(){
         if (currPiece != null){
             if (validSquare){
                 currPiece.updatePosition();
-                copyPieces(simPieces, pieces); //hmm
+                copyPieces(simPieces, pieces);
                 if (castlingP != null){
                     castlingP.updatePosition();
                 }
@@ -156,6 +190,10 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * This method determines if the king is in check
+     * @return whether the king is in check or not
+     */
     private boolean kingInCheck(){
         Piece king = getKing(true);
         if (currPiece.canMove(king.getCol(), king.getRow())){
@@ -167,6 +205,12 @@ public class GamePanel extends JPanel implements Runnable {
         return false;
     }
 
+
+    /**
+     * This method retrieves the king piece from the pieces list
+     * @param opponent If opponent king needs to be retrieved, this is true; otherwise, it's false
+     * @return the king piece
+     */
     private Piece getKing(boolean opponent){
         Piece king = null;
         for (Piece p : simPieces){
@@ -183,6 +227,11 @@ public class GamePanel extends JPanel implements Runnable {
         return king;
     }
 
+    /**
+     * This method determines if any piece can block check that occurs vertically
+     * @param king The king piece
+     * @return whether a block on the vertical can occur
+     */
     public boolean noBlockOnVertical(Piece king){
         if (checkingP.getRow() < king.getRow()){
             for (int row = checkingP.getRow(); row < king.getRow(); row++){
@@ -205,6 +254,11 @@ public class GamePanel extends JPanel implements Runnable {
         return true;
     }
 
+    /**
+     * This method determines if any piece can block check that occurs horizontally
+     * @param king The king piece
+     * @return whether a block on the horizontal can occur
+     */
     public boolean noBlockOnHorizontal(Piece king){
         if (checkingP.getCol() < king.getCol()){
             for (int col = checkingP.getCol(); col < king.getRow(); col++){
@@ -227,6 +281,11 @@ public class GamePanel extends JPanel implements Runnable {
         return true;
     }
 
+    /**
+     * This method determines if any piece can block check that occurs diagonally above the king
+     * @param king The king piece
+     * @return whether a block on the upper diagonals can occur
+     */
     public boolean noBlockOnUpperDiagonal(Piece king){
         if (checkingP.getRow() > king.getRow()){
             if (checkingP.getCol() < king.getCol()){
@@ -251,6 +310,11 @@ public class GamePanel extends JPanel implements Runnable {
         return true;
     }
 
+    /**
+     * This method determines if any piece can block check that occurs diagonally below the king
+     * @param king The king piece
+     * @return whether a block on the lower diagonals can occur
+     */
     public boolean noBlockOnLowerDiagonal(Piece king){
         if (checkingP.getRow() < king.getRow()){
             if (checkingP.getCol() < king.getCol()){
@@ -274,7 +338,12 @@ public class GamePanel extends JPanel implements Runnable {
         }
         return true;
     }
-    private boolean checkMate(){ //split to adhere to style guide
+
+    /**
+     * This method determines if checkmate has occured
+     * @return If it is checkmate, it returns true; otherwise, it's false
+     */
+    private boolean checkMate(){
         Piece king = getKing(true);
         if (kingCanMove(king)){
             return false;
@@ -292,19 +361,31 @@ public class GamePanel extends JPanel implements Runnable {
         return true;
     }
 
+    /**
+     * This method determines if the king can move to get out of check
+     * @param king The king that is attempting to move
+     * @return If the king can move out of check
+     */
     private boolean kingCanMove(Piece king){
-        if (isValidMove(king, -1, -1)) {return true;}
-        if (isValidMove(king, 0, -1)) {return true;}
-        if (isValidMove(king, 1, -1)) {return true;}
-        if (isValidMove(king, -1, 0)) {return true;}
-        if (isValidMove(king, 1, 0)) {return true;}
-        if (isValidMove(king, -1, 1)) {return true;}
-        if (isValidMove(king, 0, 1)) {return true;}
-        if (isValidMove(king, 1, 1)) {return true;}
+        if (isValidMoveForKing(king, -1, -1)) {return true;}
+        if (isValidMoveForKing(king, 0, -1)) {return true;}
+        if (isValidMoveForKing(king, 1, -1)) {return true;}
+        if (isValidMoveForKing(king, -1, 0)) {return true;}
+        if (isValidMoveForKing(king, 1, 0)) {return true;}
+        if (isValidMoveForKing(king, -1, 1)) {return true;}
+        if (isValidMoveForKing(king, 0, 1)) {return true;}
+        if (isValidMoveForKing(king, 1, 1)) {return true;}
         return false;
     }
 
-    private boolean isValidMove(Piece king, int colPlus, int rowPlus){
+    /**
+     * This determines if a destination is a valid move for the king
+     * @param king The king trying to move
+     * @param colPlus The difference in column numbers between origin and destination
+     * @param rowPlus The difference in row numbers between origin and destination
+     * @return whether it is a valid move for the king
+     */
+    private boolean isValidMoveForKing(Piece king, int colPlus, int rowPlus){
         boolean validMove = false;
         king.setCol(king.getCol() + colPlus);
         king.setRow(king.getRow() + rowPlus);
@@ -317,10 +398,14 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
         king.resetPosition();
-        copyPieces(pieces, simPieces); //hmm
+        copyPieces(pieces, simPieces);
         return validMove;
     }
 
+    /**
+     * This determines if the game is in stalemate or not
+     * @return if it is stalemate, it is true; otherwise, it is false
+     */
     private boolean staleMate(){
         int count = 0;
         for (Piece p : simPieces){
@@ -337,10 +422,13 @@ public class GamePanel extends JPanel implements Runnable {
         return false;
     }
 
+    /**
+     * This updates the location of the piece when the user has already selected a piece
+     */
     private void updatePieceLocationWhenHeld(){
         canMove = false;
         validSquare = false;
-        copyPieces(pieces, simPieces); //hmm
+        copyPieces(pieces, simPieces);
         if (castlingP != null){
             castlingP.setCol(castlingP.getPreCol());
             castlingP.setX(Piece.calcX(castlingP.getCol()));
@@ -364,6 +452,10 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * This method helps set up the castling by checking to see if there is another piece
+     * in the casting piece variable
+     */
     private void checkCastling(){
         if (castlingP != null){
             if (castlingP.getCol() == 0){
@@ -375,6 +467,11 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * This determines whether a move is illegal or not
+     * @param king The king that is moving
+     * @return the move's illegality (true if it is illegal)
+     */
     private boolean isIllegal(Piece king){
         if ("King".equals(king.getPieceType())){
             for (Piece p : simPieces){
@@ -386,6 +483,10 @@ public class GamePanel extends JPanel implements Runnable {
         return false;
     }
 
+    /**
+     * This determines if the current color's king can be captured by the opponent
+     * @return if the opponent can capture the king or not
+     */
     private boolean opponentCanCaptureKing(){
         Piece king = getKing(false);
         for (Piece p : simPieces){
@@ -396,6 +497,11 @@ public class GamePanel extends JPanel implements Runnable {
         return false;
     }
 
+    /**
+     * This draws all the components necessary for the game (board and pieces) as well information
+     * regarding turn, check, stalemate, and checkmate
+     * @param g the plotter that puts the graphics on the panel/window
+     */
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         Graphics2D g2D = (Graphics2D) g;
@@ -414,6 +520,10 @@ public class GamePanel extends JPanel implements Runnable {
         displayOtherScenarioInfo(g2D);
     }
 
+    /**
+     * This displays other info other than the board and pieces such as turn info and game status (like check)
+     * @param g2D The plotter that displays the information
+     */
     public void displayOtherScenarioInfo(Graphics2D g2D){
         g2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2D.setFont(new Font("Book Antique", Font.PLAIN, 40));
@@ -451,11 +561,19 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    /**
+     * This changes the turn either from black to white or white to black
+     */
     private void changeTurn(){
         currentColor = (currentColor == WHITE) ? BLACK : WHITE;
         currPiece = null;
     }
 
+    /**
+     * This determines if the current piece can promote
+     * Promotion only occurs if the current piece is a pawn
+     * @return
+     */
     private boolean canPromote(){
         if ("Pawn".equals(currPiece.getPieceType())){
             if (currentColor == WHITE && currPiece.getRow() == 0 || currentColor == BLACK && currPiece.getRow() == 7){
@@ -470,6 +588,10 @@ public class GamePanel extends JPanel implements Runnable {
         return false;
     }
 
+    /**
+     * This puts the new piece from promotion into the piece list so it can be displayed on the board
+     * Then the turn changes
+     */
     private void promoting(){
         if (userMouse.isPressed()){
             for (Piece p : promoPieces){
@@ -482,7 +604,7 @@ public class GamePanel extends JPanel implements Runnable {
                         default: break;
                     }
                     simPieces.remove(currPiece.getIndex());
-                    copyPieces(simPieces, pieces); //hmm
+                    copyPieces(simPieces, pieces);
                     currPiece = null;
                     promotion = false;
                     changeTurn();

@@ -45,6 +45,7 @@ public class King extends Piece {
 
     /**
      * This determines if the king can castle based on the destination location
+     * This iterates through the pieces list of the game panel class and updates the castling piece variable
      * @param targetCol The destination column
      * @param targetRow The destination row
      * @return whether the king can castle or not
