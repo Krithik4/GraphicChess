@@ -1,4 +1,13 @@
+/**
+ * This class represents the pawn piece
+ */
 public class Pawn extends Piece {
+    /**
+     * This initializes the pawn class
+     * @param color The color of the piece
+     * @param col The column coordinate of the piece
+     * @param row The row coordinate of the piece
+     */
     public Pawn(int color, int col, int row){
         super(color, col, row);
         super.pieceType = "Pawn";
@@ -9,6 +18,13 @@ public class Pawn extends Piece {
         }
     }
 
+    /**
+     * This determines whether the pawn can move to the destination based on its current location
+     * It also includes en passant
+     * @param targetCol The destination column
+     * @param targetRow The destination row
+     * @return whether the pawn can move to the spot or not
+     */
     public boolean canMove(int targetCol, int targetRow){
         if (super.onBoard(targetCol, targetRow) && !super.isSameSquare(targetCol, targetRow)){
             int moveValue = (super.color == GamePanel.WHITE) ? -1 : 1;

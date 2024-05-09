@@ -1,10 +1,17 @@
 import java.awt.Graphics2D;
 import java.awt.Color;
 
+/**
+ * This class represents the board
+ */
 public class Board {
-    public static final int SQUARE_SIZE = 100;
+    public static final int SQUARE_SIZE = 60;
     public static final int HALF_SQUARE_SIZE = SQUARE_SIZE/2;
 
+    /**
+     * This draws the image of the board
+     * @param g2D the plotter that draws on the panel
+     */
     public void draw(Graphics2D g2D){
         Color white = new Color(235, 236, 208);
         Color black = new Color(119, 149, 86);

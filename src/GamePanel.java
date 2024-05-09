@@ -12,8 +12,8 @@ import java.util.LinkedList;
 
 
 public class GamePanel extends JPanel implements Runnable {
-    public static final int WIDTH = 1100;
-    public static final int HEIGHT = 800;
+    public static final int WIDTH = 750;
+    public static final int HEIGHT = 480;
     private Thread gameThread;
     private Board gameBoard;
     private Mouse userMouse;
@@ -419,34 +419,35 @@ public class GamePanel extends JPanel implements Runnable {
         g2D.setFont(new Font("Book Antique", Font.PLAIN, 40));
         g2D.setColor(Color.white);
         if (promotion){
-            g2D.drawString("Promote to:", 840, 150);
+            g2D.setFont(new Font("Book Antique", Font.PLAIN, 30));
+            g2D.drawString("Promote to:", 500, 75);
             for (Piece p : promoPieces){
                 g2D.drawImage(p.image, Piece.calcX(p.getCol()), Piece.calcY(p.getRow()), Board.SQUARE_SIZE, Board.SQUARE_SIZE, null);
             }
         } else {
             String text = (currentColor == WHITE) ? "White's " : "Black's ";
-            int yCoord = (currentColor == WHITE) ? 600 : 200;
-            g2D.drawString(text + "Turn", 840, yCoord);
+            int yCoord = (currentColor == WHITE) ? 400 : 100;
+            g2D.drawString(text + "Turn", 500, yCoord);
             if (currentColor == WHITE && checkingP != null && checkingP.getColor() == BLACK){
+                g2D.setFont(new Font("Book Antique", Font.PLAIN, 20));
                 g2D.setColor(Color.red);
-                g2D.drawString("The King", 840, 650);
-                g2D.drawString("is in check!", 840, 700);
+                g2D.drawString("The King is in check!", 500, 450);
             } else if (currentColor == BLACK && checkingP != null && checkingP.getColor() == WHITE){
+                g2D.setFont(new Font("Book Antique", Font.PLAIN, 20));
                 g2D.setColor(Color.red);
-                g2D.drawString("The King", 840, 100);
-                g2D.drawString("is in check!", 840, 150);
+                g2D.drawString("The King is in check!", 500, 150);
             }
         }
         if (gameOver){
             String text = (currentColor == WHITE) ? "White Wins" : "Black Wins";
-            g2D.setFont(new Font("Arial", Font.PLAIN, 90));
+            g2D.setFont(new Font("Arial", Font.PLAIN, 60));
             g2D.setColor(Color.green);
-            g2D.drawString(text, 200, 420);
+            g2D.drawString(text, 100, 200);
         }
         if (stalemate){
-            g2D.setFont(new Font("Arial", Font.PLAIN, 90));
+            g2D.setFont(new Font("Arial", Font.PLAIN, 60));
             g2D.setColor(Color.green);
-            g2D.drawString("Stalemate", 200, 420);
+            g2D.drawString("Stalemate", 100, 200);
         }
     }
 
