@@ -1,12 +1,7 @@
-package piece;
-
-import main.GamePanel;
-import main.Type;
-
-public class Knight extends Piece{
+public class Knight extends Piece {
     public Knight(int color, int col, int row){
         super(color, col, row);
-        pieceType = Type.KNIGHT;
+        super.pieceType = "Knight";
         if (color == GamePanel.WHITE){
             super.image = getImage("/piece/w-knight");
         } else {
@@ -15,9 +10,9 @@ public class Knight extends Piece{
     }
 
     public boolean canMove(int targetCol, int targetRow){
-        if (onBoard(targetCol, targetRow)){
-            if (Math.abs(targetCol - preCol) * Math.abs(targetRow - preRow) == 2){
-                if (isValidSquare(targetCol, targetRow)){
+        if (super.onBoard(targetCol, targetRow)){
+            if (Math.abs(targetCol - super.preCol) * Math.abs(targetRow - super.preRow) == 2){
+                if (super.isValidSquare(targetCol, targetRow)){
                     return true;
                 }
             }

@@ -1,14 +1,10 @@
-package main;
-
 import javax.swing.JFrame;
 //hi there
 /*
  Things to do
- Get pieces to move smoothly
  Make sure king can't castle out of check
  adhere to style guide
  - method length
- - scope
  - simplification
  MAKE SURE IT'S NOT
 

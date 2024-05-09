@@ -1,12 +1,7 @@
-package piece;
-
-import main.GamePanel;
-import main.Type;
-
-public class Bishop extends Piece{
+public class Bishop extends Piece {
     public Bishop(int color, int col, int row){
         super(color, col, row);
-        pieceType = Type.BISHOP;
+        super.pieceType = "Bishop";
         if (color == GamePanel.WHITE){
             super.image = getImage("/piece/w-bishop");
         } else {
@@ -15,9 +10,9 @@ public class Bishop extends Piece{
     }
 
     public boolean canMove(int targetCol, int targetRow){
-        if (onBoard(targetCol, targetRow) && !isSameSquare(targetCol, targetRow)){
-            if (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow)){
-                if (isValidSquare(targetCol, targetRow) && !pieceOnDiagonalLine(targetCol, targetRow)){
+        if (super.onBoard(targetCol, targetRow) && !super.isSameSquare(targetCol, targetRow)){
+            if (Math.abs(targetCol - super.preCol) == Math.abs(targetRow - super.preRow)){
+                if (super.isValidSquare(targetCol, targetRow) && !super.pieceOnDiagonalLine(targetCol, targetRow)){
                     return true;
                 }
             }
