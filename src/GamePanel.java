@@ -512,7 +512,7 @@ public class GamePanel extends JPanel implements Runnable {
         if (currPiece != null){
             if (canMove){
                 g2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
-                g2D.setColor(Color.gray);
+                g2D.setColor(new Color(74, 159, 232));
                 g2D.fillRect(currPiece.getCol() * Board.SQUARE_SIZE, currPiece.getRow() * Board.SQUARE_SIZE, Board.SQUARE_SIZE, Board.SQUARE_SIZE);
                 g2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
             }
