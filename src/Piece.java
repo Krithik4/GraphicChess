@@ -430,6 +430,15 @@ public class Piece {
     }
 
     /**
+     * This resets the two step so the pawn can't move two spots again
+     * This method only matters for pawns and is a helper for en passant
+     * @return
+     */
+    public void resetTwoStepStatus(){
+        this.twoStepped = false;
+    }
+
+    /**
      * This draws the image of the piece
      * @param g2D the plotter that draws on the panel
      */

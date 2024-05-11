@@ -2,9 +2,9 @@ import javax.swing.JFrame;
 //hi there
 /*
  Things to do
- Make sure king can't castle out of check
  Do comments
- Checkmate is a little buggy
+ Checkmate/stalemate is a little buggy
+ add a start screen
  MAKE SURE IT'S NOT
  */
 

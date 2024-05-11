@@ -96,27 +96,27 @@ public class GamePanel extends JPanel implements Runnable {
      * This sets the pieces on the board at their proper locations
      */
     private void setPieces(){
-        for (int i = 0; i < 8; i++){
+        for (int i = 0; i < 2; i++){
             pieces.add(new Pawn(WHITE, i, 6));
         }
-        pieces.add(new Knight(WHITE, 1, 7));
-        pieces.add(new Knight(WHITE, 6, 7));
-        pieces.add(new Bishop(WHITE, 2, 7));
-        pieces.add(new Bishop(WHITE, 5, 7));
-        pieces.add(new Rook(WHITE, 0, 7));
-        pieces.add(new Rook(WHITE, 7, 7));
+       // pieces.add(new Knight(WHITE, 1, 7));
+       // pieces.add(new Knight(WHITE, 6, 7));
+       // pieces.add(new Bishop(WHITE, 2, 7));
+       // pieces.add(new Bishop(WHITE, 5, 7));
+       // pieces.add(new Rook(WHITE, 0, 7));
+        //pieces.add(new Rook(WHITE, 7, 7));
         pieces.add(new Queen(WHITE, 3, 7));
         pieces.add(new King(WHITE, 4, 7));
 
-        for (int i = 0; i < 8; i++){
+        for (int i = 0; i < 2; i++){
             pieces.add(new Pawn(BLACK, i, 1));
         }
-        pieces.add(new Knight(BLACK, 1, 0));
-        pieces.add(new Knight(BLACK, 6, 0));
-        pieces.add(new Bishop(BLACK, 2, 0));
-        pieces.add(new Bishop(BLACK, 5, 0));
-        pieces.add(new Rook(BLACK, 0, 0));
-        pieces.add(new Rook(BLACK, 7, 0));
+        //pieces.add(new Knight(BLACK, 1, 0));
+        //pieces.add(new Knight(BLACK, 6, 0));
+        //pieces.add(new Bishop(BLACK, 2, 0));
+        //pieces.add(new Bishop(BLACK, 5, 0));
+        //pieces.add(new Rook(BLACK, 0, 0));
+        //pieces.add(new Rook(BLACK, 7, 0));
         pieces.add(new Queen(BLACK, 3, 0));
         pieces.add(new King(BLACK, 4, 0));
     }
@@ -567,6 +567,11 @@ public class GamePanel extends JPanel implements Runnable {
      */
     private void changeTurn(){
         currentColor = (currentColor == WHITE) ? BLACK : WHITE;
+        for (Piece p : pieces){
+            if (p.getColor() == currentColor){
+                p.resetTwoStepStatus();
+            }
+        }
         currPiece = null;
     }
 
