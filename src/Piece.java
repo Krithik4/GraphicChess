@@ -131,7 +131,7 @@ public class Piece {
 
     /**
      * This determines if the piece can move to a certain row and column
-     * This method is overriden in the specific piece class so they abide by chess rules
+     * This method is overridden in the specific piece class so they abide by chess rules
      * @param targetCol The destination column
      * @param targetRow The destination row
      * @return if piece can move to destination
@@ -141,10 +141,10 @@ public class Piece {
     }
 
     /**
-     * This determines if the destination row and column is outside the board
+     * This determines if the destination row and column is inside the board
      * @param targetCol The destination column
      * @param targetRow The destination row
-     * @return if the piece is outside the board
+     * @return if the piece is inside the board
      */
     public boolean onBoard(int targetCol, int targetRow){
         return (targetCol >= 0 && targetCol <= 7 && targetRow >= 0 && targetRow <= 7);
@@ -167,7 +167,7 @@ public class Piece {
     }
 
     /**
-     * This determines if the destination is valid (regardless of specifc piece rules)
+     * This determines if the destination is valid (regardless of specific piece rules)
      * It checks to see if destination is occupied and then determines if it is a valid square
      * @param targetCol The destination column
      * @param targetRow The destination row
@@ -279,10 +279,15 @@ public class Piece {
      * This determines if there is a piece in any diagonal path in the way of the destination location
      * @param targetCol The destination column
      * @param targetRow The destination row
-     * @return if there is piece obstructing any diagonal path
+     * @return if there is piece obstructing a diagonal path
      */
     public boolean pieceOnDiagonalLine(int targetCol, int targetRow){
-        return pieceOnLowerDiags(targetCol, targetRow) || pieceOnUpperDiags(targetCol, targetRow);
+        if (targetRow < preRow){
+            return pieceOnUpperDiags(targetCol, targetRow);
+        } else {
+            return pieceOnLowerDiags(targetCol, targetRow);
+        }
+        //return pieceOnLowerDiags(targetCol, targetRow) || pieceOnUpperDiags(targetCol, targetRow);
     }
 
     /**
@@ -358,6 +363,14 @@ public class Piece {
     }
 
     /**
+     * This gets the previous row number of the piece
+     * @return the previous row number
+     */
+    public int getPreRow(){
+        return this.preRow;
+    }
+
+    /**
      * This gets the current column number of the piece
      * @return the current column number
      */
@@ -430,9 +443,8 @@ public class Piece {
     }
 
     /**
-     * This resets the two step so the pawn can't move two spots again
+     * This resets the two step moved status so its status is immediately set to false after any two step has been made
      * This method only matters for pawns and is a helper for en passant
-     * @return
      */
     public void resetTwoStepStatus(){
         this.twoStepped = false;

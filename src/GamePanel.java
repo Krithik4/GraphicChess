@@ -38,8 +38,11 @@ public class GamePanel extends JPanel implements Runnable {
     private boolean gameOver;
     private boolean stalemate;
 
+    public static boolean canCastle;
+
     /**
      * This initializes an instance of the GamePanel class by setting up the panel and configuring mouse input
+     * The pieces list and the backup pieces list are filled
      */
     public GamePanel(){
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
@@ -94,29 +97,30 @@ public class GamePanel extends JPanel implements Runnable {
 
     /**
      * This sets the pieces on the board at their proper locations
+     * The pieces list is filled
      */
     private void setPieces(){
-        for (int i = 0; i < 2; i++){
+        for (int i = 0; i < 8; i++){
             pieces.add(new Pawn(WHITE, i, 6));
         }
-       // pieces.add(new Knight(WHITE, 1, 7));
-       // pieces.add(new Knight(WHITE, 6, 7));
-       // pieces.add(new Bishop(WHITE, 2, 7));
-       // pieces.add(new Bishop(WHITE, 5, 7));
-       // pieces.add(new Rook(WHITE, 0, 7));
-        //pieces.add(new Rook(WHITE, 7, 7));
+        pieces.add(new Knight(WHITE, 1, 7));
+        pieces.add(new Knight(WHITE, 6, 7));
+        pieces.add(new Bishop(WHITE, 2, 7));
+        pieces.add(new Bishop(WHITE, 5, 7));
+        pieces.add(new Rook(WHITE, 0, 7));
+        pieces.add(new Rook(WHITE, 7, 7));
         pieces.add(new Queen(WHITE, 3, 7));
         pieces.add(new King(WHITE, 4, 7));
 
-        for (int i = 0; i < 2; i++){
+        for (int i = 0; i < 8; i++){
             pieces.add(new Pawn(BLACK, i, 1));
         }
-        //pieces.add(new Knight(BLACK, 1, 0));
-        //pieces.add(new Knight(BLACK, 6, 0));
-        //pieces.add(new Bishop(BLACK, 2, 0));
-        //pieces.add(new Bishop(BLACK, 5, 0));
-        //pieces.add(new Rook(BLACK, 0, 0));
-        //pieces.add(new Rook(BLACK, 7, 0));
+        pieces.add(new Knight(BLACK, 1, 0));
+        pieces.add(new Knight(BLACK, 6, 0));
+        pieces.add(new Bishop(BLACK, 2, 0));
+        pieces.add(new Bishop(BLACK, 5, 0));
+        pieces.add(new Rook(BLACK, 0, 0));
+        pieces.add(new Rook(BLACK, 7, 0));
         pieces.add(new Queen(BLACK, 3, 0));
         pieces.add(new King(BLACK, 4, 0));
     }
@@ -185,6 +189,10 @@ public class GamePanel extends JPanel implements Runnable {
             } else {
                 copyPieces(pieces, simPieces);
                 currPiece.resetPosition();
+                if (castlingP != null){
+                    castlingP.resetPosition();
+                    castlingP = null;
+                }
                 currPiece = null;
             }
         }
@@ -196,12 +204,13 @@ public class GamePanel extends JPanel implements Runnable {
      */
     private boolean kingInCheck(){
         Piece king = getKing(true);
-        if (currPiece.canMove(king.getCol(), king.getRow())){
-            checkingP = currPiece;
-            return true;
-        } else {
-            checkingP = null;
+        for (Piece p : simPieces){
+            if (p.canMove(king.getCol(), king.getRow())){
+                checkingP = p;
+                return true;
+            }
         }
+        checkingP = null;
         return false;
     }
 
@@ -282,11 +291,11 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * This method determines if any piece can block check that occurs diagonally above the king
+     * This method determines if any piece can block check that occurs diagonally below the king
      * @param king The king piece
-     * @return whether a block on the upper diagonals can occur
+     * @return whether a block on the lower diagonals can occur
      */
-    public boolean noBlockOnUpperDiagonal(Piece king){
+    public boolean noBlockOnLowerDiagonal(Piece king){
         if (checkingP.getRow() > king.getRow()){
             if (checkingP.getCol() < king.getCol()){
                 for (int col = checkingP.getCol(), row = checkingP.getRow(); col < king.getCol(); col++, row--){
@@ -311,11 +320,11 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * This method determines if any piece can block check that occurs diagonally below the king
+     * This method determines if any piece can block check that occurs diagonally above the king
      * @param king The king piece
-     * @return whether a block on the lower diagonals can occur
+     * @return whether a block on the upper diagonals can occur
      */
-    public boolean noBlockOnLowerDiagonal(Piece king){
+    public boolean noBlockOnUpperDiagonal(Piece king){
         if (checkingP.getRow() < king.getRow()){
             if (checkingP.getCol() < king.getCol()){
                 for (int col = checkingP.getCol(), row = checkingP.getRow(); col < king.getCol(); col++, row++){
@@ -355,7 +364,11 @@ public class GamePanel extends JPanel implements Runnable {
             } else if (rowDiff == 0){
                 return noBlockOnHorizontal(king);
             } else if (rowDiff == colDiff){
-                return noBlockOnUpperDiagonal(king) || noBlockOnLowerDiagonal(king);
+                if (checkingP.getRow() > king.getRow()){
+                    return noBlockOnLowerDiagonal(king);
+                } else {
+                    return noBlockOnUpperDiagonal(king);
+                }
             }
         }
         return true;
@@ -407,20 +420,324 @@ public class GamePanel extends JPanel implements Runnable {
      * @return if it is stalemate, it is true; otherwise, it is false
      */
     private boolean staleMate(){
-        int count = 0;
-        for (Piece p : simPieces){
+        /**
+         * Fix stalemate
+         * case 1: two kings only -> done
+         * case 2: no piece of the next turn can move
+         */
+
+        if (simPieces.size() == 2 && simPieces.get(0).getPieceType().equals("King") && simPieces.get(1).getPieceType().equals("King")){
+            return true;
+        }
+
+        for (int i = 0; i < simPieces.size(); i++){
+              Piece p = simPieces.get(i);
             if (p.getColor() != currentColor){
-                count++;
+                String type = p.getPieceType();
+                boolean canMove = false;
+                switch (type){
+                    case "King":
+                        canMove = kingCanMove(p);
+                        break;
+                    case "Queen":
+                        canMove = queenCanMove(p);
+                        break;
+                    case "Rook":
+                        canMove = rookCanMove(p);
+                        break;
+                    case "Bishop":
+                        canMove = bishopCanMove(p);
+                        break;
+                    case "Knight":
+                        canMove = knightCanMove(p);
+                        break;
+                    case "Pawn":
+                        canMove = pawnCanMove(p);
+                        break;
+                    default:
+                        break;
+                }
+                copyPieces(pieces, simPieces);
+                if (canMove){
+                    return false;
+                }
             }
         }
 
-        if (count == 1){
-            if (!kingCanMove(getKing(true))){
+//        int count = 0;
+//        for (Piece p : simPieces){
+//            if (p.getColor() != currentColor){
+//                count++;
+//            }
+//        }
+//
+//        if (count == 1){
+//            if (!kingCanMove(getKing(true))){
+//                return true;
+//            }
+//        }
+//        return false;
+        return true;
+    }
+
+    public boolean knightCanMove(Piece knight){
+        int col = knight.getCol();
+        int row = knight.getRow();
+
+        if (knight.canMove(col + 1, row - 2)){ //top right
+            knight.setCol(col + 1);
+            knight.setRow(row - 2);
+            if (!kingInCheck()){
+                knight.resetPosition();
                 return true;
             }
         }
+        knight.resetPosition();
+        if (knight.canMove(col - 1, row - 2)){ //top left
+            knight.setCol(col - 1);
+            knight.setRow(row - 2);
+            if (!kingInCheck()){
+                knight.resetPosition();
+                return true;
+            }
+        }
+        knight.resetPosition();
+        if (knight.canMove(col - 1, row + 2)){ //bottom left
+            knight.setCol(col - 1);
+            knight.setRow(row + 2);
+            if (!kingInCheck()){
+                knight.resetPosition();
+                return true;
+            }
+        }
+        knight.resetPosition();
+        if (knight.canMove(col + 1, row + 2)){ //bottom right
+            knight.setCol(col + 1);
+            knight.setRow(row + 2);
+            if (!kingInCheck()){
+                knight.resetPosition();
+                return true;
+            }
+        }
+        knight.resetPosition();
+        if (knight.canMove(col - 2, row - 1)){ //most left and 1 up
+            knight.setCol(col - 2);
+            knight.setRow(row - 1);
+            if (!kingInCheck()){
+                knight.resetPosition();
+                return true;
+            }
+        }
+        knight.resetPosition();
+        if (knight.canMove(col + 2, row - 1)){ //most right and 1 up
+            knight.setCol(col + 2);
+            knight.setRow(row - 1);
+            if (!kingInCheck()){
+                knight.resetPosition();
+                return true;
+            }
+        }
+        knight.resetPosition();
+        if (knight.canMove(col - 2, row + 1)){ //most left and 1 dow
+            knight.setCol(col - 2);
+            knight.setRow(row + 1);
+            if (!kingInCheck()){
+                knight.resetPosition();
+                return true;
+            }
+        }
+        knight.resetPosition();
+        if (knight.canMove(col + 2, row + 1)){ //most right and 1 dow
+            knight.setCol(col + 2);
+            knight.setRow(row + 1);
+            if (!kingInCheck()){
+                knight.resetPosition();
+                return true;
+            }
+        }
+        knight.resetPosition();
         return false;
     }
+
+    public boolean pawnCanMove(Piece pawn){
+        int moveIncrement = (currentColor == WHITE) ? -1 : 1;
+        int col = pawn.getCol();
+        int row = pawn.getRow();
+
+        if (pawn.canMove(col, row + moveIncrement)){
+            pawn.setRow(row + moveIncrement);
+            if (!kingInCheck()){
+                pawn.resetPosition();
+                return true;
+            }
+        }
+        pawn.resetPosition();
+        if (pawn.canMove(col, row + moveIncrement * 2)){
+            pawn.setRow(row + moveIncrement * 2);
+            if (!kingInCheck()){
+                pawn.resetPosition();
+                return true;
+            }
+        }
+        pawn.resetPosition();
+        if (pawn.canMove(col + 1, row + moveIncrement)){
+            pawn.setCol(col + 1);
+            pawn.setRow(row + moveIncrement);
+            if (!kingInCheck()){
+                pawn.resetPosition();
+                return true;
+            }
+        }
+        pawn.resetPosition();
+        if (pawn.canMove(col - 1, row + moveIncrement)){
+            pawn.setCol(col - 1);
+            pawn.setRow(row + moveIncrement);
+            if (!kingInCheck()){
+                pawn.resetPosition();
+                return true;
+            }
+        }
+        pawn.resetPosition();
+        return false;
+    }
+
+    public boolean rookCanMove(Piece rook){
+        int col = rook.getCol();
+        int row = rook.getRow();
+
+        for (int i = -7; i < 8; i++){
+            if (rook.canMove(col + i, row)){
+                rook.setCol(col + i);
+                if (!kingInCheck()){
+                    rook.resetPosition();
+                    return true;
+                }
+            }
+            rook.resetPosition();
+            if (rook.canMove(col, row + i)){
+                rook.setRow(row + i);
+                if (!kingInCheck()){
+                    rook.resetPosition();
+                    return true;
+                }
+            }
+            rook.resetPosition();
+        }
+        rook.resetPosition();
+        return false;
+    }
+
+    public boolean bishopCanMove(Piece bishop){
+        int col = bishop.getCol();
+        int row = bishop.getRow();
+
+        for (int i = -7; i < 8; i++){
+            if (bishop.canMove(col + i, row + i)){
+                bishop.setCol(col + i);
+                bishop.setRow(row + i);
+                if (!kingInCheck()){
+                    bishop.resetPosition();
+                    return true;
+                }
+            }
+            bishop.resetPosition();
+            if (bishop.canMove(col + i, row - i)){
+                bishop.setCol(col + i);
+                bishop.setRow(row - i);
+                if (!kingInCheck()){
+                    bishop.resetPosition();
+                    return true;
+                }
+            }
+            bishop.resetPosition();
+            if (bishop.canMove(col - i, row - i)){
+                bishop.setCol(col - i);
+                bishop.setRow(row - i);
+                if (!kingInCheck()){
+                    bishop.resetPosition();
+                    return true;
+                }
+            }
+            bishop.resetPosition();
+            if (bishop.canMove(col + i, row - i)){
+                bishop.setCol(col + i);
+                bishop.setRow(row - i);
+                if (!kingInCheck()){
+                    bishop.resetPosition();
+                    return true;
+                }
+            }
+            bishop.resetPosition();
+        }
+        bishop.resetPosition();
+        return false;
+    }
+
+    public boolean queenCanMove(Piece queen){
+        int col = queen.getCol();
+        int row = queen.getRow();
+
+        for (int i = -7; i < 8; i++){
+            if (queen.canMove(col + i, row)){
+                queen.setCol(col + i);
+                if (!kingInCheck()){
+                    queen.resetPosition();
+                    return true;
+                }
+            }
+            queen.resetPosition();
+            if (queen.canMove(col, row + i)){
+                queen.setRow(row + i);
+                if (!kingInCheck()){
+                    queen.resetPosition();
+                    return true;
+                }
+            }
+            queen.resetPosition();
+
+            if (queen.canMove(col + i, row + i)){
+                queen.setCol(col + i);
+                queen.setRow(row + i);
+                if (!kingInCheck()){
+                    queen.resetPosition();
+                    return true;
+                }
+            }
+            queen.resetPosition();
+            if (queen.canMove(col + i, row - i)){
+                queen.setCol(col + i);
+                queen.setRow(row - i);
+                if (!kingInCheck()){
+                    queen.resetPosition();
+                    return true;
+                }
+            }
+            queen.resetPosition();
+            if (queen.canMove(col - i, row - i)){
+                queen.setCol(col - i);
+                queen.setRow(row - i);
+                if (!kingInCheck()){
+                    queen.resetPosition();
+                    return true;
+                }
+            }
+            queen.resetPosition();
+            if (queen.canMove(col + i, row - i)){
+                queen.setCol(col + i);
+                queen.setRow(row - i);
+                if (!kingInCheck()){
+                    queen.resetPosition();
+                    return true;
+                }
+            }
+            queen.resetPosition();
+        }
+
+        queen.resetPosition();
+        return false;
+    }
+
+
 
     /**
      * This updates the location of the piece when the user has already selected a piece
@@ -498,11 +815,30 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
+     * This determines whether the king is in check or not based on its stationary position
+     * This is used to determine whether the king can castle or not
+     * Other requirements need to be satisfied in order to fully confirm if the king can castle or not
+     * @return if the current king is in check
+     */
+    private boolean isCurrentKingInCheck(){
+        Piece king = getKing(false);
+        for (Piece p : simPieces){
+            if (p.getColor() != king.getColor() && p.canMove(king.getPreCol(), king.getPreRow())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * This draws all the components necessary for the game (board and pieces) as well information
      * regarding turn, check, stalemate, and checkmate
+     * This updates the canCastle variable to determine if the king is currently in check and is eligible to castle
+     * This iterates through the pieces list to display on the panel
      * @param g the plotter that puts the graphics on the panel/window
      */
     public void paintComponent(Graphics g){
+        canCastle = !isCurrentKingInCheck();
         super.paintComponent(g);
         Graphics2D g2D = (Graphics2D) g;
         gameBoard.draw(g2D);//board
@@ -513,7 +849,8 @@ public class GamePanel extends JPanel implements Runnable {
             if (canMove){
                 g2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
                 g2D.setColor(new Color(74, 159, 232));
-                g2D.fillRect(currPiece.getCol() * Board.SQUARE_SIZE, currPiece.getRow() * Board.SQUARE_SIZE, Board.SQUARE_SIZE, Board.SQUARE_SIZE);
+                g2D.fillRect(currPiece.getCol() * Board.SQUARE_SIZE, currPiece.getRow() * Board.SQUARE_SIZE,
+                        Board.SQUARE_SIZE, Board.SQUARE_SIZE);
                 g2D.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
             }
             currPiece.draw(g2D);
@@ -529,13 +866,13 @@ public class GamePanel extends JPanel implements Runnable {
         g2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2D.setFont(new Font("Book Antique", Font.PLAIN, 40));
         g2D.setColor(Color.white);
-        if (promotion){
+        if (promotion){ //extra options for promotion
             g2D.setFont(new Font("Book Antique", Font.PLAIN, 30));
             g2D.drawString("Promote to:", 500, 75);
             for (Piece p : promoPieces){
                 g2D.drawImage(p.image, Piece.calcX(p.getCol()), Piece.calcY(p.getRow()), Board.SQUARE_SIZE, Board.SQUARE_SIZE, null);
             }
-        } else {
+        } else { //to display turn information, and check information
             String text = (currentColor == WHITE) ? "White's " : "Black's ";
             int yCoord = (currentColor == WHITE) ? 400 : 100;
             g2D.drawString(text + "Turn", 500, yCoord);
@@ -549,16 +886,16 @@ public class GamePanel extends JPanel implements Runnable {
                 g2D.drawString("The King is in check!", 500, 150);
             }
         }
-        if (gameOver){
+        if (gameOver){ //checkmate info
             String text = (currentColor == WHITE) ? "White Wins" : "Black Wins";
             g2D.setFont(new Font("Arial", Font.PLAIN, 60));
-            g2D.setColor(Color.green);
-            g2D.drawString(text, 100, 200);
+            g2D.setColor(Color.BLUE);
+            g2D.drawString(text, 100, 250);
         }
-        if (stalemate){
+        if (stalemate){ //stalemate info
             g2D.setFont(new Font("Arial", Font.PLAIN, 60));
-            g2D.setColor(Color.green);
-            g2D.drawString("Stalemate", 100, 200);
+            g2D.setColor(Color.BLUE);
+            g2D.drawString("Stalemate", 100, 250);
         }
     }
 
@@ -578,7 +915,7 @@ public class GamePanel extends JPanel implements Runnable {
     /**
      * This determines if the current piece can promote
      * Promotion only occurs if the current piece is a pawn
-     * @return
+     * @return true if the piece can promote, otherwise return false
      */
     private boolean canPromote(){
         if ("Pawn".equals(currPiece.getPieceType())){
