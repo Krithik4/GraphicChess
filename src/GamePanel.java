@@ -53,8 +53,17 @@ public class GamePanel extends JPanel implements Runnable {
         addMouseMotionListener(userMouse);
         addMouseListener(userMouse);
 
-        setPieces();
+        setMate();
         copyPieces(pieces, piecesShownOnBoard);
+    }
+
+    public void setMate(){
+        pieces.add(new King(BLACK, 0, 7));
+        pieces.add(new King(WHITE, 1, 5));
+        pieces.add(new Knight(WHITE, 1, 4));//
+        pieces.add(new Knight(WHITE, 3, 6));
+        pieces.add(new Bishop(BLACK, 6, 2));
+
     }
 
     /**
@@ -360,16 +369,21 @@ public class GamePanel extends JPanel implements Runnable {
         } else { //blocking
             int colDiff = Math.abs(checkingP.getCol() - king.getCol());
             int rowDiff = Math.abs(checkingP.getRow() - king.getRow());
-            if (colDiff == 0){
+            if (colDiff == 0){ // rook or queen attacking
                 return noBlockOnVertical(king);
-            } else if (rowDiff == 0){
-                System.out.println("hi");
+            } else if (rowDiff == 0){ //rook or queen attacking
                 return noBlockOnHorizontal(king);
-            } else if (rowDiff == colDiff){
+            } else if (rowDiff == colDiff){ //bishop or queen attacking
                 if (checkingP.getRow() > king.getRow()){
                     return noBlockOnLowerDiagonal(king);
                 } else {
                     return noBlockOnUpperDiagonal(king);
+                }
+            } else { //knight attacking
+                for (Piece p : piecesShownOnBoard){
+                    if (p.getColor() != currentColor && p.canMove(checkingP.getCol(), checkingP.getRow())){
+                        return false;
+                    }
                 }
             }
         }
