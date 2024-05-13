@@ -158,7 +158,7 @@ public class Piece {
      * @return the piece being captured (null if no piece is captured)
      */
     public Piece gettingHitP(int targetCol, int targetRow){
-        for (Piece p : GamePanel.simPieces){
+        for (Piece p : GamePanel.piecesShownOnBoard){
             if (p.col == targetCol && p.row == targetRow  && p != this){
                 return p;
             }
@@ -193,8 +193,8 @@ public class Piece {
      * @return the index of the piece
      */
     public int getIndex(){
-        for (int i = 0; i < GamePanel.simPieces.size(); i++){
-            if (GamePanel.simPieces.get(i) == this){
+        for (int i = 0; i < GamePanel.piecesShownOnBoard.size(); i++){
+            if (GamePanel.piecesShownOnBoard.get(i) == this){
                 return i;
             }
         }
@@ -230,7 +230,7 @@ public class Piece {
      */
     public boolean pieceOnHorizontalLine(int targetCol, int targetRow){
         for (int c = preCol - 1; c > targetCol; c--){ //left
-            for (Piece p : GamePanel.simPieces){
+            for (Piece p : GamePanel.piecesShownOnBoard){
                 if (p.col == c && p.row == targetRow){
                     hittingP = p;
                     return true;
@@ -238,7 +238,7 @@ public class Piece {
             }
         }
         for (int c = preCol + 1; c < targetCol; c++){ //right
-            for (Piece p : GamePanel.simPieces){
+            for (Piece p : GamePanel.piecesShownOnBoard){
                 if (p.col == c && p.row == targetRow){
                     hittingP = p;
                     return true;
@@ -257,7 +257,7 @@ public class Piece {
      */
     public boolean pieceOnVerticalLine(int targetCol, int targetRow){
         for (int r = preRow - 1; r > targetRow; r--){ //up
-            for (Piece p : GamePanel.simPieces){
+            for (Piece p : GamePanel.piecesShownOnBoard){
                 if (p.col == targetCol && p.row == r){
                     hittingP = p;
                     return true;
@@ -265,7 +265,7 @@ public class Piece {
             }
         }
         for (int r = preRow + 1; r < targetRow; r++){ //down
-            for (Piece p : GamePanel.simPieces){
+            for (Piece p : GamePanel.piecesShownOnBoard){
                 if (p.col == targetCol && p.row == r){
                     hittingP = p;
                     return true;
@@ -301,7 +301,7 @@ public class Piece {
         if (targetRow < preRow){//up
             for (int c = preCol - 1; c > targetCol; c--){ //left
                 int diff = Math.abs(c - preCol);
-                for (Piece p : GamePanel.simPieces){
+                for (Piece p : GamePanel.piecesShownOnBoard){
                     if (p.col == c && p.row == preRow - diff){
                         hittingP = p;
                         return true;
@@ -311,7 +311,7 @@ public class Piece {
 
             for (int c = preCol + 1; c < targetCol; c++){ //right
                 int diff = Math.abs(c - preCol);
-                for (Piece p : GamePanel.simPieces){
+                for (Piece p : GamePanel.piecesShownOnBoard){
                     if (p.col == c && p.row == preRow - diff){
                         hittingP = p;
                         return true;
@@ -333,7 +333,7 @@ public class Piece {
         if (targetRow > preRow){//down
             for (int c = preCol - 1; c > targetCol; c--){ //left
                 int diff = Math.abs(c - preCol);
-                for (Piece p : GamePanel.simPieces){
+                for (Piece p : GamePanel.piecesShownOnBoard){
                     if (p.col == c && p.row == preRow + diff){
                         hittingP = p;
                         return true;
@@ -343,7 +343,7 @@ public class Piece {
 
             for (int c = preCol + 1; c < targetCol; c++){ //right
                 int diff = Math.abs(c - preCol);
-                for (Piece p : GamePanel.simPieces){
+                for (Piece p : GamePanel.piecesShownOnBoard){
                     if (p.col == c && p.row == preRow + diff){
                         hittingP = p;
                         return true;

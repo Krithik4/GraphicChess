@@ -1,0 +1,317 @@
+private boolean staleMate(){
+        /**
+         * Fix stalemate
+         * case 1: two kings only -> done
+         * case 2: no piece of the next turn can move
+         */
+
+        if (piecesShownOnBoard.size() == 2 && piecesShownOnBoard.get(0).getPieceType().equals("King") && piecesShownOnBoard.get(1).getPieceType().equals("King")){
+            return true;
+        }
+
+        for (int i = 0; i < piecesShownOnBoard.size(); i++){
+              Piece p = piecesShownOnBoard.get(i);
+            if (p.getColor() != currentColor){
+                String type = p.getPieceType();
+                boolean canMove = false;
+                switch (type){
+                    case "King":
+                        canMove = kingCanMove(p);
+                        break;
+                    case "Queen":
+                        canMove = queenCanMove(p);
+                        break;
+                    case "Rook":
+                        canMove = rookCanMove(p);
+                        break;
+                    case "Bishop":
+                        canMove = bishopCanMove(p);
+                        break;
+                    case "Knight":
+                        canMove = knightCanMove(p);
+                        break;
+                    case "Pawn":
+                        canMove = pawnCanMove(p);
+                        break;
+                    default:
+                        break;
+                }
+                copyPieces(pieces, piecesShownOnBoard);
+                if (canMove){
+                    return false;
+                }
+            }
+        }
+
+//        int count = 0;
+//        for (Piece p : piecesShownOnBoard){
+//            if (p.getColor() != currentColor){
+//                count++;
+//            }
+//        }
+//
+//        if (count == 1){
+//            if (!kingCanMove(getKing(true))){
+//                return true;
+//            }
+//        }
+//        return false;
+        return true;
+    }
+
+public boolean knightCanMove(Piece knight){
+        int col = knight.getCol();
+        int row = knight.getRow();
+
+        if (knight.canMove(col + 1, row - 2)){ //top right
+            knight.setCol(col + 1);
+            knight.setRow(row - 2);
+            if (!kingInCheck()){
+                knight.resetPosition();
+                return true;
+            }
+        }
+        knight.resetPosition();
+        if (knight.canMove(col - 1, row - 2)){ //top left
+            knight.setCol(col - 1);
+            knight.setRow(row - 2);
+            if (!kingInCheck()){
+                knight.resetPosition();
+                return true;
+            }
+        }
+        knight.resetPosition();
+        if (knight.canMove(col - 1, row + 2)){ //bottom left
+            knight.setCol(col - 1);
+            knight.setRow(row + 2);
+            if (!kingInCheck()){
+                knight.resetPosition();
+                return true;
+            }
+        }
+        knight.resetPosition();
+        if (knight.canMove(col + 1, row + 2)){ //bottom right
+            knight.setCol(col + 1);
+            knight.setRow(row + 2);
+            if (!kingInCheck()){
+                knight.resetPosition();
+                return true;
+            }
+        }
+        knight.resetPosition();
+        if (knight.canMove(col - 2, row - 1)){ //most left and 1 up
+            knight.setCol(col - 2);
+            knight.setRow(row - 1);
+            if (!kingInCheck()){
+                knight.resetPosition();
+                return true;
+            }
+        }
+        knight.resetPosition();
+        if (knight.canMove(col + 2, row - 1)){ //most right and 1 up
+            knight.setCol(col + 2);
+            knight.setRow(row - 1);
+            if (!kingInCheck()){
+                knight.resetPosition();
+                return true;
+            }
+        }
+        knight.resetPosition();
+        if (knight.canMove(col - 2, row + 1)){ //most left and 1 dow
+            knight.setCol(col - 2);
+            knight.setRow(row + 1);
+            if (!kingInCheck()){
+                knight.resetPosition();
+                return true;
+            }
+        }
+        knight.resetPosition();
+        if (knight.canMove(col + 2, row + 1)){ //most right and 1 dow
+            knight.setCol(col + 2);
+            knight.setRow(row + 1);
+            if (!kingInCheck()){
+                knight.resetPosition();
+                return true;
+            }
+        }
+        knight.resetPosition();
+        return false;
+    }
+
+    public boolean pawnCanMove(Piece pawn){
+        int moveIncrement = (currentColor == WHITE) ? -1 : 1;
+        int col = pawn.getCol();
+        int row = pawn.getRow();
+
+        if (pawn.canMove(col, row + moveIncrement)){
+            pawn.setRow(row + moveIncrement);
+            if (!kingInCheck()){
+                pawn.resetPosition();
+                return true;
+            }
+        }
+        pawn.resetPosition();
+        if (pawn.canMove(col, row + moveIncrement * 2)){
+            pawn.setRow(row + moveIncrement * 2);
+            if (!kingInCheck()){
+                pawn.resetPosition();
+                return true;
+            }
+        }
+        pawn.resetPosition();
+        if (pawn.canMove(col + 1, row + moveIncrement)){
+            pawn.setCol(col + 1);
+            pawn.setRow(row + moveIncrement);
+            if (!kingInCheck()){
+                pawn.resetPosition();
+                return true;
+            }
+        }
+        pawn.resetPosition();
+        if (pawn.canMove(col - 1, row + moveIncrement)){
+            pawn.setCol(col - 1);
+            pawn.setRow(row + moveIncrement);
+            if (!kingInCheck()){
+                pawn.resetPosition();
+                return true;
+            }
+        }
+        pawn.resetPosition();
+        return false;
+    }
+
+    public boolean rookCanMove(Piece rook){
+        int col = rook.getCol();
+        int row = rook.getRow();
+
+        for (int i = -7; i < 8; i++){
+            if (rook.canMove(col + i, row)){
+                rook.setCol(col + i);
+                if (!kingInCheck()){
+                    rook.resetPosition();
+                    return true;
+                }
+            }
+            rook.resetPosition();
+            if (rook.canMove(col, row + i)){
+                rook.setRow(row + i);
+                if (!kingInCheck()){
+                    rook.resetPosition();
+                    return true;
+                }
+            }
+            rook.resetPosition();
+        }
+        rook.resetPosition();
+        return false;
+    }
+
+    public boolean bishopCanMove(Piece bishop){
+        int col = bishop.getCol();
+        int row = bishop.getRow();
+
+        for (int i = -7; i < 8; i++){
+            if (bishop.canMove(col + i, row + i)){
+                bishop.setCol(col + i);
+                bishop.setRow(row + i);
+                if (!kingInCheck()){
+                    bishop.resetPosition();
+                    return true;
+                }
+            }
+            bishop.resetPosition();
+            if (bishop.canMove(col + i, row - i)){
+                bishop.setCol(col + i);
+                bishop.setRow(row - i);
+                if (!kingInCheck()){
+                    bishop.resetPosition();
+                    return true;
+                }
+            }
+            bishop.resetPosition();
+            if (bishop.canMove(col - i, row - i)){
+                bishop.setCol(col - i);
+                bishop.setRow(row - i);
+                if (!kingInCheck()){
+                    bishop.resetPosition();
+                    return true;
+                }
+            }
+            bishop.resetPosition();
+            if (bishop.canMove(col + i, row - i)){
+                bishop.setCol(col + i);
+                bishop.setRow(row - i);
+                if (!kingInCheck()){
+                    bishop.resetPosition();
+                    return true;
+                }
+            }
+            bishop.resetPosition();
+        }
+        bishop.resetPosition();
+        return false;
+    }
+
+    public boolean queenCanMove(Piece queen){
+        int col = queen.getCol();
+        int row = queen.getRow();
+
+        for (int i = -7; i < 8; i++){
+            if (queen.canMove(col + i, row)){
+                queen.setCol(col + i);
+                if (!kingInCheck()){
+                    queen.resetPosition();
+                    return true;
+                }
+            }
+            queen.resetPosition();
+            if (queen.canMove(col, row + i)){
+                queen.setRow(row + i);
+                if (!kingInCheck()){
+                    queen.resetPosition();
+                    return true;
+                }
+            }
+            queen.resetPosition();
+
+            if (queen.canMove(col + i, row + i)){
+                queen.setCol(col + i);
+                queen.setRow(row + i);
+                if (!kingInCheck()){
+                    queen.resetPosition();
+                    return true;
+                }
+            }
+            queen.resetPosition();
+            if (queen.canMove(col + i, row - i)){
+                queen.setCol(col + i);
+                queen.setRow(row - i);
+                if (!kingInCheck()){
+                    queen.resetPosition();
+                    return true;
+                }
+            }
+            queen.resetPosition();
+            if (queen.canMove(col - i, row - i)){
+                queen.setCol(col - i);
+                queen.setRow(row - i);
+                if (!kingInCheck()){
+                    queen.resetPosition();
+                    return true;
+                }
+            }
+            queen.resetPosition();
+            if (queen.canMove(col + i, row - i)){
+                queen.setCol(col + i);
+                queen.setRow(row - i);
+                if (!kingInCheck()){
+                    queen.resetPosition();
+                    return true;
+                }
+            }
+            queen.resetPosition();
+        }
+
+        queen.resetPosition();
+        return false;
+    }

@@ -57,7 +57,7 @@ public class King extends Piece {
     public boolean canCastle(int targetCol, int targetRow){
         if (!super.moved){
             if (targetCol == super.preCol + 2 && targetRow == super.preRow && !super.pieceOnStraightLine(targetCol, targetRow)){ //kingside castle
-                for (Piece p : GamePanel.simPieces){
+                for (Piece p : GamePanel.piecesShownOnBoard){
                     if (p.col == super.preCol + 3 && p.row == super.preRow && !p.moved){
                         GamePanel.setCastlingP(p);
                         return true;
@@ -65,7 +65,7 @@ public class King extends Piece {
                 }
             }
             if (targetCol == super.preCol - 2 && targetRow == super.preRow && !super.pieceOnStraightLine(targetCol, targetRow)){ //queenside castle
-                for (Piece p : GamePanel.simPieces){
+                for (Piece p : GamePanel.piecesShownOnBoard){
                     if (p.col == super.preCol - 4 && p.row == super.preRow && !p.moved){
                         GamePanel.setCastlingP(p);
                         return true;

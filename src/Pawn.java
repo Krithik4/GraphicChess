@@ -43,7 +43,7 @@ public class Pawn extends Piece {
             }
             //en passant
             if (Math.abs(targetCol - super.preCol) == 1 && targetRow == super.preRow + moveValue){
-                for (Piece p : GamePanel.simPieces){
+                for (Piece p : GamePanel.piecesShownOnBoard){
                     if (p.col == targetCol && p.row == super.preRow && p.twoStepped){
                         super.hittingP = p;
                         return true;
