@@ -9,7 +9,6 @@ import java.awt.RenderingHints;
 import java.awt.AlphaComposite;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 
 /**
  * This class represents the game that is displayed in the JFrame window
@@ -146,6 +145,7 @@ public class GamePanel extends JPanel implements Runnable {
     private void update(){
         if (promotion){
             promoting();
+            opponentCanCaptureKing();
         } else if (!gameOver && !stalemate){
             if (userMouse.isPressed()) {
                 if (currPiece == null) {
@@ -510,25 +510,11 @@ public class GamePanel extends JPanel implements Runnable {
         Piece king = getKing(false);
         for (Piece p : piecesShownOnBoard){
             if (p.getColor() != king.getColor() && p.canMove(king.getCol(), king.getRow())){
+                checkingP = p;
                 return true;
             }
         }
-        return false;
-    }
-
-    /**
-     * This determines whether the king is in check or not based on its stationary position
-     * This is used to determine whether the king can castle or not
-     * Other requirements need to be satisfied in order to fully confirm if the king can castle or not
-     * @return if the current king is in check
-     */
-    private boolean isCurrentKingInCheck(){
-        Piece king = getKing(false);
-        for (Piece p : piecesShownOnBoard){
-            if (p.getColor() != king.getColor() && p.canMove(king.getPreCol(), king.getPreRow())){
-                return true;
-            }
-        }
+        checkingP = null;
         return false;
     }
 
@@ -540,7 +526,7 @@ public class GamePanel extends JPanel implements Runnable {
      * @param g the plotter that puts the graphics on the panel/window
      */
     public void paintComponent(Graphics g){
-        canCastle = !isCurrentKingInCheck();
+        canCastle = !opponentCanCaptureKing();
         super.paintComponent(g);
         Graphics2D g2D = (Graphics2D) g;
         gameBoard.draw(g2D);//board
