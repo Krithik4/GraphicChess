@@ -271,7 +271,7 @@ public class GamePanel extends JPanel implements Runnable {
      */
     public boolean noBlockOnHorizontal(Piece king){
         if (checkingP.getCol() < king.getCol()){
-            for (int col = checkingP.getCol(); col < king.getRow(); col++){
+            for (int col = checkingP.getCol(); col < king.getCol(); col++){
                 for (Piece p : piecesShownOnBoard){
                     if (p != king && p.getColor() != currentColor && p.canMove(col, checkingP.getRow())){
                         return false;
@@ -280,7 +280,7 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
         if (checkingP.getCol() > king.getCol()){
-            for (int col = checkingP.getCol(); col > king.getRow(); col--){
+            for (int col = checkingP.getCol(); col > king.getCol(); col--){
                 for (Piece p : piecesShownOnBoard){
                     if (p != king && p.getColor() != currentColor && p.canMove(col, checkingP.getRow())){
                         return false;
@@ -350,7 +350,7 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     /**
-     * This method determines if checkmate has occured
+     * This method determines if checkmate has occurred
      * @return If it is checkmate, it returns true; otherwise, it's false
      */
     private boolean checkMate(){
@@ -363,6 +363,7 @@ public class GamePanel extends JPanel implements Runnable {
             if (colDiff == 0){
                 return noBlockOnVertical(king);
             } else if (rowDiff == 0){
+                System.out.println("hi");
                 return noBlockOnHorizontal(king);
             } else if (rowDiff == colDiff){
                 if (checkingP.getRow() > king.getRow()){
