@@ -192,14 +192,14 @@ public class Piece {
      * The static variable for the pieces list does not change, it is only iterated through
      * @return the index of the piece
      */
-    public int getIndex(){
-        for (int i = 0; i < GamePanel.piecesShownOnBoard.size(); i++){
-            if (GamePanel.piecesShownOnBoard.get(i) == this){
-                return i;
-            }
-        }
-        return 0;
-    }
+//    public int getIndex(){
+//        for (int i = 0; i < GamePanel.piecesShownOnBoard.size(); i++){
+//            if (GamePanel.piecesShownOnBoard.get(i) == this){
+//                return i;
+//            }
+//        }
+//        return 0;
+//    }
 
     /**
      * The determines if the destination is the same as the piece's current location

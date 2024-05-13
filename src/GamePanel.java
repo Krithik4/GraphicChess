@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.RenderingHints;
 import java.awt.AlphaComposite;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 /**
@@ -26,8 +27,8 @@ public class GamePanel extends JPanel implements Runnable {
     private int currentColor = WHITE;
 
     //pieces
-    public static LinkedList<Piece> pieces = new LinkedList<>();
-    public static LinkedList<Piece> piecesShownOnBoard = new LinkedList<>(); //call piecesShownOnBoard
+    public static HashSet<Piece> pieces = new HashSet<>();
+    public static HashSet<Piece> piecesShownOnBoard = new HashSet<>(); //call piecesShownOnBoard
     private ArrayList<Piece> promoPieces;
     private Piece currPiece, checkingP;
     public static Piece castlingP;
@@ -130,7 +131,7 @@ public class GamePanel extends JPanel implements Runnable {
      * @param from The original list
      * @param to The destination list
      */
-    private void copyPieces(LinkedList<Piece> from, LinkedList<Piece> to){
+    private void copyPieces(HashSet<Piece> from, HashSet<Piece> to){
         to.clear();
         for (Piece piece : from) {
             to.add(piece);
@@ -404,7 +405,7 @@ public class GamePanel extends JPanel implements Runnable {
         king.setRow(king.getRow() + rowPlus);
         if (king.canMove(king.getCol(), king.getRow())){
             if (king.getCapturedP() != null){
-                piecesShownOnBoard.remove(king.getCapturedP().getIndex());
+                piecesShownOnBoard.remove(king.getCapturedP());
             }
             if (!isIllegal(king)){
                 validMove = true;
@@ -420,8 +421,8 @@ public class GamePanel extends JPanel implements Runnable {
      * @return if it is stalemate, it is true; otherwise, it is false
      */
     private boolean staleMate(){
-        if (piecesShownOnBoard.size() == 2 && piecesShownOnBoard.get(0).getPieceType().equals("King")
-                && piecesShownOnBoard.get(1).getPieceType().equals("King")){
+        if (piecesShownOnBoard.size() == 2){
+            //only kings are left
             return true;
         }
 
@@ -460,7 +461,7 @@ public class GamePanel extends JPanel implements Runnable {
             if (currPiece.canMove(currPiece.getCol(), currPiece.getRow())){
                 canMove = true;
                 if (currPiece.getCapturedP() != null){
-                    piecesShownOnBoard.remove(currPiece.getCapturedP().getIndex());
+                    piecesShownOnBoard.remove(currPiece.getCapturedP());
                 }
                 checkCastling();
                 if (!isIllegal(currPiece) && !opponentCanCaptureKing()){
@@ -647,7 +648,7 @@ public class GamePanel extends JPanel implements Runnable {
                         case "Queen": piecesShownOnBoard.add(new Queen(currentColor, currPiece.getCol(), currPiece.getRow())); break;
                         default: break;
                     }
-                    piecesShownOnBoard.remove(currPiece.getIndex());
+                    piecesShownOnBoard.remove(currPiece);
                     copyPieces(piecesShownOnBoard, pieces);
                     currPiece = null;
                     promotion = false;
