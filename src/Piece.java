@@ -188,20 +188,6 @@ public class Piece {
     }
 
     /**
-     * This determines the index of the piece in the list of pieces
-     * The static variable for the pieces list does not change, it is only iterated through
-     * @return the index of the piece
-     */
-//    public int getIndex(){
-//        for (int i = 0; i < GamePanel.piecesShownOnBoard.size(); i++){
-//            if (GamePanel.piecesShownOnBoard.get(i) == this){
-//                return i;
-//            }
-//        }
-//        return 0;
-//    }
-
-    /**
      * The determines if the destination is the same as the piece's current location
      * @param targetCol The destination column
      * @param targetRow The destination row
@@ -229,15 +215,9 @@ public class Piece {
      * @return if there is piece obstructing any horizontal path
      */
     public boolean pieceOnHorizontalLine(int targetCol, int targetRow){
-        for (int c = preCol - 1; c > targetCol; c--){ //left
-            for (Piece p : GamePanel.piecesShownOnBoard){
-                if (p.col == c && p.row == targetRow){
-                    hittingP = p;
-                    return true;
-                }
-            }
-        }
-        for (int c = preCol + 1; c < targetCol; c++){ //right
+        boolean targetOnRight = preCol < targetCol;
+        int increment = (targetOnRight) ? 1 : -1;
+        for (int c = preCol + increment; targetOnRight ? c < targetCol : c > targetCol; c += increment){
             for (Piece p : GamePanel.piecesShownOnBoard){
                 if (p.col == c && p.row == targetRow){
                     hittingP = p;
@@ -256,15 +236,9 @@ public class Piece {
      * @return if there is piece obstructing any vertical path
      */
     public boolean pieceOnVerticalLine(int targetCol, int targetRow){
-        for (int r = preRow - 1; r > targetRow; r--){ //up
-            for (Piece p : GamePanel.piecesShownOnBoard){
-                if (p.col == targetCol && p.row == r){
-                    hittingP = p;
-                    return true;
-                }
-            }
-        }
-        for (int r = preRow + 1; r < targetRow; r++){ //down
+        boolean targetAbove = preRow > targetRow;
+        int increment = (targetAbove) ? -1 : 1;
+        for (int r = preRow + increment; targetAbove ? r > targetRow : r < targetRow; r += increment){
             for (Piece p : GamePanel.piecesShownOnBoard){
                 if (p.col == targetCol && p.row == r){
                     hittingP = p;
@@ -287,7 +261,6 @@ public class Piece {
         } else {
             return pieceOnLowerDiags(targetCol, targetRow);
         }
-        //return pieceOnLowerDiags(targetCol, targetRow) || pieceOnUpperDiags(targetCol, targetRow);
     }
 
     /**
@@ -299,17 +272,10 @@ public class Piece {
      */
     public boolean pieceOnUpperDiags(int targetCol, int targetRow){
         if (targetRow < preRow){//up
-            for (int c = preCol - 1; c > targetCol; c--){ //left
-                int diff = Math.abs(c - preCol);
-                for (Piece p : GamePanel.piecesShownOnBoard){
-                    if (p.col == c && p.row == preRow - diff){
-                        hittingP = p;
-                        return true;
-                    }
-                }
-            }
+            boolean targetOnRight = preCol < targetCol;
+            int increment = (targetOnRight) ? 1 : -1;
 
-            for (int c = preCol + 1; c < targetCol; c++){ //right
+            for (int c = preCol + increment; targetOnRight ? c < targetCol : c > targetCol; c += increment){
                 int diff = Math.abs(c - preCol);
                 for (Piece p : GamePanel.piecesShownOnBoard){
                     if (p.col == c && p.row == preRow - diff){
@@ -331,17 +297,10 @@ public class Piece {
      */
     public boolean pieceOnLowerDiags(int targetCol, int targetRow){
         if (targetRow > preRow){//down
-            for (int c = preCol - 1; c > targetCol; c--){ //left
-                int diff = Math.abs(c - preCol);
-                for (Piece p : GamePanel.piecesShownOnBoard){
-                    if (p.col == c && p.row == preRow + diff){
-                        hittingP = p;
-                        return true;
-                    }
-                }
-            }
+            boolean targetOnRight = preCol < targetCol;
+            int increment = (targetOnRight) ? 1 : -1;
 
-            for (int c = preCol + 1; c < targetCol; c++){ //right
+            for (int c = preCol + increment; targetOnRight ? c < targetCol : c > targetCol; c += increment){
                 int diff = Math.abs(c - preCol);
                 for (Piece p : GamePanel.piecesShownOnBoard){
                     if (p.col == c && p.row == preRow + diff){

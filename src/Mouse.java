@@ -2,7 +2,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * This is mouse class that enable mouse input to move and select pieces
+ * This is a mouse class that enable mouse input to move and select pieces
  */
 public class Mouse extends MouseAdapter {
     private int x, y;
@@ -10,7 +10,7 @@ public class Mouse extends MouseAdapter {
 
     /**
      * This returns whether the mouse is pressed or not
-     * @return if the mouse is pressed or not
+     * @return true if the mouse is pressed or false if it isn't
      */
     public boolean isPressed(){
         return this.pressed;

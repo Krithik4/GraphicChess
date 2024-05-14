@@ -1,5 +1,4 @@
 import javax.swing.JPanel;
-//import java.awt.*;
 import java.awt.Dimension;
 import java.awt.Color;
 import java.awt.Graphics;
@@ -27,7 +26,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     //pieces
     public static HashSet<Piece> pieces = new HashSet<>();
-    public static HashSet<Piece> piecesShownOnBoard = new HashSet<>(); //call piecesShownOnBoard
+    public static HashSet<Piece> piecesShownOnBoard = new HashSet<>();
     private ArrayList<Piece> promoPieces;
     private Piece currPiece, checkingP;
     public static Piece castlingP;
@@ -53,17 +52,8 @@ public class GamePanel extends JPanel implements Runnable {
         addMouseMotionListener(userMouse);
         addMouseListener(userMouse);
 
-        setMate();
+        setPieces();
         copyPieces(pieces, piecesShownOnBoard);
-    }
-
-    public void setMate(){
-        pieces.add(new King(BLACK, 0, 7));
-        pieces.add(new King(WHITE, 1, 5));
-        pieces.add(new Knight(WHITE, 1, 4));//
-        pieces.add(new Knight(WHITE, 3, 6));
-        pieces.add(new Bishop(BLACK, 6, 2));
-
     }
 
     /**
@@ -106,7 +96,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     /**
      * This sets the pieces on the board at their proper locations
-     * The pieces list is filled
+     * The pieces list is filled and updated
      */
     private void setPieces(){
         for (int i = 0; i < 8; i++){
@@ -252,21 +242,12 @@ public class GamePanel extends JPanel implements Runnable {
      * @return whether a block on the vertical can occur
      */
     public boolean noBlockOnVertical(Piece king){
-        if (checkingP.getRow() < king.getRow()){
-            for (int row = checkingP.getRow(); row < king.getRow(); row++){
-                for (Piece p : piecesShownOnBoard){
-                    if (p != king && p.getColor() != currentColor && p.canMove(checkingP.getCol(), row)){
-                        return false;
-                    }
-                }
-            }
-        }
-        if (checkingP.getRow() > king.getRow()){
-            for (int row = checkingP.getRow(); row > king.getRow(); row--){
-                for (Piece p : piecesShownOnBoard){
-                    if (p != king && p.getColor() != currentColor && p.canMove(checkingP.getCol(), row)){
-                        return false;
-                    }
+        boolean checkAbove = checkingP.getRow() < king.getRow();
+        int increment = (checkAbove) ? 1 : -1;
+        for (int row = checkingP.getRow(); checkAbove ? row < king.getRow() : row > king.getRow(); row += increment){
+            for (Piece p : piecesShownOnBoard){
+                if (p != king && p.getColor() != currentColor && p.canMove(checkingP.getCol(), row)){
+                    return false;
                 }
             }
         }
@@ -279,21 +260,12 @@ public class GamePanel extends JPanel implements Runnable {
      * @return whether a block on the horizontal can occur
      */
     public boolean noBlockOnHorizontal(Piece king){
-        if (checkingP.getCol() < king.getCol()){
-            for (int col = checkingP.getCol(); col < king.getCol(); col++){
-                for (Piece p : piecesShownOnBoard){
-                    if (p != king && p.getColor() != currentColor && p.canMove(col, checkingP.getRow())){
-                        return false;
-                    }
-                }
-            }
-        }
-        if (checkingP.getCol() > king.getCol()){
-            for (int col = checkingP.getCol(); col > king.getCol(); col--){
-                for (Piece p : piecesShownOnBoard){
-                    if (p != king && p.getColor() != currentColor && p.canMove(col, checkingP.getRow())){
-                        return false;
-                    }
+        boolean checkLeft = checkingP.getCol() < king.getCol();
+        int increment = (checkLeft) ? 1 : -1;
+        for (int col = checkingP.getCol(); checkLeft ? col < king.getCol() : col > king.getCol(); col += increment){
+            for (Piece p : piecesShownOnBoard){
+                if (p != king && p.getColor() != currentColor && p.canMove(col, checkingP.getRow())){
+                    return false;
                 }
             }
         }
@@ -307,21 +279,13 @@ public class GamePanel extends JPanel implements Runnable {
      */
     public boolean noBlockOnLowerDiagonal(Piece king){
         if (checkingP.getRow() > king.getRow()){
-            if (checkingP.getCol() < king.getCol()){
-                for (int col = checkingP.getCol(), row = checkingP.getRow(); col < king.getCol(); col++, row--){
-                    for (Piece p : piecesShownOnBoard){
-                        if (p != king && p.getColor() != currentColor && p.canMove(col, row)){
-                            return false;
-                        }
-                    }
-                }
-            }
-            if (checkingP.getCol() > king.getCol()){
-                for (int col = checkingP.getCol(), row = checkingP.getRow(); col > king.getCol(); col--, row--){
-                    for (Piece p : piecesShownOnBoard){
-                        if (p != king && p.getColor() != currentColor && p.canMove(col, row)){
-                            return false;
-                        }
+            boolean checkLeft = checkingP.getCol() < king.getCol();
+            int increment = (checkLeft) ? 1 : -1;
+            for (int col = checkingP.getCol(), row = checkingP.getRow();
+                 checkLeft ? col < king.getCol() : col > king.getCol(); col += increment, row--){
+                for (Piece p : piecesShownOnBoard){
+                    if (p != king && p.getColor() != currentColor && p.canMove(col, row)){
+                        return false;
                     }
                 }
             }
@@ -336,21 +300,13 @@ public class GamePanel extends JPanel implements Runnable {
      */
     public boolean noBlockOnUpperDiagonal(Piece king){
         if (checkingP.getRow() < king.getRow()){
-            if (checkingP.getCol() < king.getCol()){
-                for (int col = checkingP.getCol(), row = checkingP.getRow(); col < king.getCol(); col++, row++){
-                    for (Piece p : piecesShownOnBoard){
-                        if (p != king && p.getColor() != currentColor && p.canMove(col, row)){
-                            return false;
-                        }
-                    }
-                }
-            }
-            if (checkingP.getCol() > king.getCol()){
-                for (int col = checkingP.getCol(), row = checkingP.getRow(); col > king.getCol(); col--, row++){
-                    for (Piece p : piecesShownOnBoard){
-                        if (p != king && p.getColor() != currentColor && p.canMove(col, row)){
-                            return false;
-                        }
+            boolean checkLeft = checkingP.getCol() < king.getCol();
+            int increment = (checkLeft) ? 1 : -1;
+            for (int col = checkingP.getCol(), row = checkingP.getRow();
+                 checkLeft ? col < king.getCol() : col > king.getCol(); col += increment, row++){
+                for (Piece p : piecesShownOnBoard){
+                    if (p != king && p.getColor() != currentColor && p.canMove(col, row)){
+                        return false;
                     }
                 }
             }

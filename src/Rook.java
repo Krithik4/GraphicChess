@@ -1,6 +1,3 @@
-//import GamePanel;
-//import Type;
-
 /**
  * This class represents the rook piece
  */
