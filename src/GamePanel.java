@@ -396,18 +396,182 @@ public class GamePanel extends JPanel implements Runnable {
             //only kings are left
             return true;
         }
-
-        int count = 0;
-        for (Piece p : piecesShownOnBoard){
-            if (p.getColor() != currentColor){
-                count++;
+        boolean kingCantMove = !kingCanMove(getKing(true));
+        for (Piece p : pieces){ //goes through all pieces and determines if any piece can make a legal move
+            if (p.getColor() != currentColor && p != getKing(true)){
+                String pType = p.getPieceType();
+                switch (pType){
+                    case "Pawn":
+                        if (pawnCanMove(p)){return false;}
+                        break;
+                    case "Knight":
+                        if (knightCanMove(p)){return false;}
+                        break;
+                    case "Bishop":
+                        if (bishopCanMove(p)){return false;}
+                        break;
+                    case "Rook":
+                        if (rookCanMove(p)){return false;}
+                        break;
+                    case "Queen":
+                        if (queenCanMove(p)){return false;}
+                        break;
+                }
             }
         }
+        return kingCantMove;
+    }
 
-        if (count == 1){
-            if (!kingCanMove(getKing(true))){
-                return true;
+    /**
+     * This determines all the possible locations a pawn could move from its current location
+     * If it can move anywhere legally, then the method returns true
+     * @param pawn The pawn piece
+     * @return if the pawn can move anywhere legally
+     */
+    public boolean pawnCanMove(Piece pawn){
+        int[] colDiff = {0, 0, 1, -1};
+        int[] rowDiff = {1, 2, 1, 1};
+        for (int i = 0; i < colDiff.length; i++){
+            rowDiff[i] = (pawn.getColor() == WHITE) ? rowDiff[i] * -1 : rowDiff[i];
+            pawn.setCol(pawn.getCol() + colDiff[i]);
+            pawn.setRow(pawn.getRow() + rowDiff[i]);
+            if (pawn.canMove(pawn.getCol(), pawn.getRow())){
+                if (pawn.getCapturedP() != null){
+                    piecesShownOnBoard.remove(pawn.getCapturedP());
+                }
+                if (!kingInCheck()){
+                    pawn.resetPosition();
+                    copyPieces(pieces, piecesShownOnBoard);
+                    return true;
+                }
             }
+            pawn.resetPosition();
+            copyPieces(pieces, piecesShownOnBoard);
+        }
+        return false;
+    }
+
+    /**
+     * This determines all the possible locations a knight could move from its current location
+     * If it can move anywhere legally, then the method returns true
+     * @param knight The knight piece
+     * @return if the knight can move anywhere legally
+     */
+    public boolean knightCanMove(Piece knight){
+        int [] colDiff = {-2, -2, -1, -1, 1, 1, 2, 2};
+        int [] rowDiff = {-1, 1, -2, 2, -2, 2, -1, 1};
+
+        for (int i = 0; i < colDiff.length; i++){
+            knight.setCol(knight.getCol() + colDiff[i]);
+            knight.setRow(knight.getRow() + rowDiff[i]);
+            if (knight.canMove(knight.getCol(), knight.getRow())){
+                if (knight.getCapturedP() != null){
+                    piecesShownOnBoard.remove(knight.getCapturedP());
+                }
+                if (!kingInCheck()){
+                    knight.resetPosition();
+                    copyPieces(pieces, piecesShownOnBoard);
+                    return true;
+                }
+            }
+            knight.resetPosition();
+            copyPieces(pieces, piecesShownOnBoard);
+        }
+        return false;
+    }
+
+    /**
+     * This determines all the possible locations a bishop can move from its current location
+     * If it can move anywhere legally, it returns true
+     * @param bishop The bishop piece
+     * @return if the bishop can move anywhere legally
+     */
+    public boolean bishopCanMove(Piece bishop){
+        int[] colDiff = {1, 2, 3, 4, 5, 6, 7, -7, -6, -5, -4, -3, -2, -1};
+        int[] rowDiff = {1, 2, 3, 4, 5, 6, 7, -7, -6, -5, -4, -3, -2, -1};
+
+        for (int i = 0; i < colDiff.length; i++){
+            bishop.setCol(bishop.getCol() + colDiff[i]);
+            bishop.setRow(bishop.getRow() + rowDiff[i]);
+            if (bishop.canMove(bishop.getCol(), bishop.getRow())){
+                if (bishop.getCapturedP() != null){
+                    piecesShownOnBoard.remove(bishop.getCapturedP());
+                }
+                if (!kingInCheck()){
+                    bishop.resetPosition();
+                    copyPieces(pieces, piecesShownOnBoard);
+                    return true;
+                }
+            }
+            bishop.resetPosition();
+            copyPieces(pieces, piecesShownOnBoard);
+        }
+        return false;
+    }
+
+    /**
+     * This determines all the possible locations a rook can move from its current location
+     * If it can move anywhere legally, it returns true
+     * @param rook The rook piece
+     * @return if the rook can move anywhere legally
+     */
+    public boolean rookCanMove(Piece rook){
+        int[] colDiff = {1, 2, 3, 4, 5, 6, 7, -7, -6, -5, -4, -3, -2, -1};
+        int[] rowDiff = {1, 2, 3, 4, 5, 6, 7, -7, -6, -5, -4, -3, -2, -1};
+
+        for (int i = 0; i < colDiff.length * 2; i++){
+            if (i < colDiff.length){
+                rook.setCol(rook.getCol() + colDiff[i]);
+            } else {
+                rook.setRow(rook.getRow() + rowDiff[i - colDiff.length]);
+            }
+            if (rook.canMove(rook.getCol(), rook.getRow())){
+                if (rook.getCapturedP() != null){
+                    piecesShownOnBoard.remove(rook.getCapturedP());
+                }
+                if (!kingInCheck()){
+                    rook.resetPosition();
+                    copyPieces(pieces, piecesShownOnBoard);
+                    return true;
+                }
+            }
+            rook.resetPosition();
+            copyPieces(pieces, piecesShownOnBoard);
+        }
+        return false;
+    }
+
+    /**
+     * This determines all the possible locations a queen can move from its current location
+     * If it can move anywhere legally, it returns true
+     * @param queen The queen piece
+     * @return if the queen can move anywhere legally
+     */
+    public boolean queenCanMove(Piece queen){
+        int[] colDiff = {1, 2, 3, 4, 5, 6, 7, -7, -6, -5, -4, -3, -2, -1};
+        int[] rowDiff = {1, 2, 3, 4, 5, 6, 7, -7, -6, -5, -4, -3, -2, -1};
+
+        for (int i = 0; i < colDiff.length * 3; i++){
+            if (i < colDiff.length){ //diagonal
+                queen.setCol(queen.getCol() + colDiff[i]);
+                queen.setRow(queen.getRow() + rowDiff[i]);
+            } else if (i < colDiff.length * 2){ //left and right
+                queen.setCol(queen.getCol() + colDiff[i - colDiff.length]);
+            } else { //up and down
+                queen.setRow(queen.getRow() + rowDiff[i - colDiff.length * 2]);
+            }
+            if (queen.canMove(queen.getCol(), queen.getRow())){
+                if (queen.getCapturedP() != null){
+                    piecesShownOnBoard.remove(queen.getCapturedP());
+                }
+                if (!kingInCheck()){
+                    queen.resetPosition();
+                    copyPieces(pieces, piecesShownOnBoard);
+                    return true;
+                }
+            }
+            queen.resetPosition();
+            copyPieces(pieces, piecesShownOnBoard);
         }
         return false;
     }
