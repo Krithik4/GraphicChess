@@ -56,7 +56,7 @@ public class King extends Piece {
      */
     public boolean canCastle(int targetCol, int targetRow){
         for (Piece p : GamePanel.piecesShownOnBoard){
-            if (p.getRow() == targetRow && p.getCol() == targetCol){
+            if (p != this && p.getRow() == targetRow && p.getCol() == targetCol){
                 return false;
             }
         }

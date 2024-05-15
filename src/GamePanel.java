@@ -693,13 +693,15 @@ public class GamePanel extends JPanel implements Runnable {
             g2D.setFont(new Font("Book Antique", Font.PLAIN, 30));
             g2D.drawString("Promote to:", 500, 75);
             for (Piece p : promoPieces){
+                g2D.setColor(Color.lightGray);
+                g2D.fillRect(Piece.calcX(p.getCol()), Piece.calcY(p.getRow()), Board.SQUARE_SIZE, Board.SQUARE_SIZE);
                 g2D.drawImage(p.image, Piece.calcX(p.getCol()), Piece.calcY(p.getRow()), Board.SQUARE_SIZE, Board.SQUARE_SIZE, null);
             }
         } else { //to display turn information, and check information
             String text = (currentColor == WHITE) ? "White's " : "Black's ";
             int yCoord = (currentColor == WHITE) ? 400 : 100;
             g2D.drawString(text + "Turn", 500, yCoord);
-            if (currentColor == WHITE && checkingP != null && checkingP.getColor() == BLACK){
+            if (currentColor == WHITE && checkingP != null && checkingP.getColor() == BLACK){ //check information
                 g2D.setFont(new Font("Book Antique", Font.PLAIN, 20));
                 g2D.setColor(Color.red);
                 g2D.drawString("The King is in check!", 500, 450);
