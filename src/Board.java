@@ -23,9 +23,9 @@ public class Board {
                 } else {
                     g2D.setColor((whiteFirst) ? black : white);
                 }
-                g2D.fillRect(col * SQUARE_SIZE,row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE);
+                g2D.fillRect(col * SQUARE_SIZE,row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE); //creates a square
             }
-            whiteFirst = !whiteFirst;
+            whiteFirst = !whiteFirst; //alternate starting color of row
         }
     }
 }

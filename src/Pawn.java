@@ -20,8 +20,7 @@ public class Pawn extends Piece {
 
     /**
      * This determines whether the pawn can move to the destination based on its current location
-     * This iterates through the pieces list of the game panel to check for en passant
-     * It also includes en passant
+     * This iterates through the pieces list of the game panel to check for en passant; no piece gets changed
      * @param targetCol The destination column
      * @param targetRow The destination row
      * @return whether the pawn can move to the spot or not
@@ -44,7 +43,7 @@ public class Pawn extends Piece {
             //en passant
             if (Math.abs(targetCol - super.preCol) == 1 && targetRow == super.preRow + moveValue){
                 for (Piece p : GamePanel.piecesShownOnBoard){
-                    if (p.col == targetCol && p.row == super.preRow && p.twoStepped){
+                    if (p.col == targetCol && p.row == super.preRow && p.twoStepped){ //makes sure en passant occurs after two step
                         super.hittingP = p;
                         return true;
                     }

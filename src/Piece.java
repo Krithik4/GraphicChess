@@ -61,6 +61,7 @@ public class Piece {
         try {
             tempImage = ImageIO.read(this.getClass().getResourceAsStream(path + ".png"));
         } catch(IOException io){
+            System.out.println("Couldn't find image");
             io.printStackTrace();
         }
         return tempImage;
@@ -68,6 +69,7 @@ public class Piece {
 
     /**
      * This calculates the x coordinate on the board based on a specified column
+     * The board class' size variable is accessed
      * @param column The specified column
      * @return The x coordinate
      */
@@ -77,6 +79,7 @@ public class Piece {
 
     /**
      * This calculates the y coordinate on the board based on a specified row
+     * The board class' size variable is accessed
      * @param rowParam The specified row
      * @return The y coordinate
      */
@@ -86,6 +89,7 @@ public class Piece {
 
     /**
      * This calculates the column on the board based on a specified x value
+     * The board class' size and half-size variables are accessed
      * @param xParam The specified x value
      * @return The column
      */
@@ -95,6 +99,7 @@ public class Piece {
 
     /**
      * This calculates the row on the board based on a specified y value
+     * The board class' size and half-size variables are accessed
      * @param yParam The specified y value
      * @return The column
      */
@@ -107,7 +112,7 @@ public class Piece {
      */
     public void updatePosition(){
         if ("Pawn".equals(this.pieceType)){
-            if (Math.abs(this.row - this.preRow) == 2){
+            if (Math.abs(this.row - this.preRow) == 2){ //used for en passant checking
                 this.twoStepped = true;
             }
         }
@@ -217,6 +222,7 @@ public class Piece {
     public boolean pieceOnHorizontalLine(int targetCol, int targetRow){
         boolean targetOnRight = preCol < targetCol;
         int increment = (targetOnRight) ? 1 : -1;
+        //the loop header determines if the destination is to the left or right and increments accordingly
         for (int c = preCol + increment; targetOnRight ? c < targetCol : c > targetCol; c += increment){
             for (Piece p : GamePanel.piecesShownOnBoard){
                 if (p.col == c && p.row == targetRow){
@@ -238,6 +244,7 @@ public class Piece {
     public boolean pieceOnVerticalLine(int targetCol, int targetRow){
         boolean targetAbove = preRow > targetRow;
         int increment = (targetAbove) ? -1 : 1;
+        //the loop header determines if the destination is above or below and increments accordingly
         for (int r = preRow + increment; targetAbove ? r > targetRow : r < targetRow; r += increment){
             for (Piece p : GamePanel.piecesShownOnBoard){
                 if (p.col == targetCol && p.row == r){
@@ -274,7 +281,7 @@ public class Piece {
         if (targetRow < preRow){//up
             boolean targetOnRight = preCol < targetCol;
             int increment = (targetOnRight) ? 1 : -1;
-
+            //loop header determines whether the target is on the right or left and increments accordingly
             for (int c = preCol + increment; targetOnRight ? c < targetCol : c > targetCol; c += increment){
                 int diff = Math.abs(c - preCol);
                 for (Piece p : GamePanel.piecesShownOnBoard){
@@ -299,7 +306,7 @@ public class Piece {
         if (targetRow > preRow){//down
             boolean targetOnRight = preCol < targetCol;
             int increment = (targetOnRight) ? 1 : -1;
-
+            //loop header determines whether the target is on the right or left and increments accordingly
             for (int c = preCol + increment; targetOnRight ? c < targetCol : c > targetCol; c += increment){
                 int diff = Math.abs(c - preCol);
                 for (Piece p : GamePanel.piecesShownOnBoard){
@@ -411,6 +418,7 @@ public class Piece {
 
     /**
      * This draws the image of the piece
+     * This accesses the static variable for size from the board class
      * @param g2D the plotter that draws on the panel
      */
     public void draw(Graphics2D g2D){

@@ -28,12 +28,12 @@ public class King extends Piece {
      */
     public boolean canMove(int targetCol, int targetRow){
         if (super.onBoard(targetCol, targetRow)){
-            if (Math.abs(targetCol - super.preCol) + Math.abs(targetRow - super.preRow) == 1){ //horizontal and vertical
+            if (Math.abs(targetCol - super.preCol) + Math.abs(targetRow - super.preRow) == 1){ //horizontal and vertical movement
                 if (super.isValidSquare(targetCol, targetRow)){
                     return true;
                 }
             }
-            if (Math.abs(targetCol - super.preCol) == 1 && Math.abs(targetRow - super.preRow) == 1){ //diagonal
+            if (Math.abs(targetCol - super.preCol) == 1 && Math.abs(targetRow - super.preRow) == 1){ //diagonal movement
                 if (super.isValidSquare(targetCol, targetRow)){
                     return true;
                 }
@@ -50,13 +50,15 @@ public class King extends Piece {
     /**
      * This determines if the king can castle based on the destination location
      * This iterates through the pieces list of the game panel class and updates the castling piece variable
+     * Pre: The static castling piece is null
+     * Post: The static castling piece is one of the rooks if castling is allowed currently
      * @param targetCol The destination column
      * @param targetRow The destination row
      * @return whether the king can castle or not
      */
     public boolean canCastle(int targetCol, int targetRow){
         for (Piece p : GamePanel.piecesShownOnBoard){
-            if (p != this && p.getRow() == targetRow && p.getCol() == targetCol){
+            if (p != this && p.getRow() == targetRow && p.getCol() == targetCol){ //checks to see if castling spot isn't empty
                 return false;
             }
         }

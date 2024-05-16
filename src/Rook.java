@@ -26,7 +26,7 @@ public class Rook extends Piece {
      */
     public boolean canMove(int targetCol, int targetRow){
         if (onBoard(targetCol, targetRow)){
-            if (targetCol == preCol ^ targetRow == preRow){
+            if (targetCol == preCol ^ targetRow == preRow){ //either the row or the column are the same
                 if (isValidSquare(targetCol, targetRow) && !pieceOnStraightLine(targetCol, targetRow)){
                     return true;
                 }

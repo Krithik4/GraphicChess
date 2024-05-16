@@ -26,7 +26,8 @@ public class Bishop extends Piece {
      */
     public boolean canMove(int targetCol, int targetRow){
         if (super.onBoard(targetCol, targetRow) && !super.isSameSquare(targetCol, targetRow)){
-            if (Math.abs(targetCol - super.preCol) == Math.abs(targetRow - super.preRow)){
+            if (Math.abs(targetCol - super.preCol) == Math.abs(targetRow - super.preRow)){ // the difference in column
+                //and row is the same
                 if (super.isValidSquare(targetCol, targetRow) && !super.pieceOnDiagonalLine(targetCol, targetRow)){
                     return true;
                 }

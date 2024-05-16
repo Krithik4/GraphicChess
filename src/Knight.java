@@ -28,6 +28,7 @@ public class Knight extends Piece {
     public boolean canMove(int targetCol, int targetRow){
         if (super.onBoard(targetCol, targetRow)){
             if (Math.abs(targetCol - super.preCol) * Math.abs(targetRow - super.preRow) == 2){
+                //moves in an L shape; so one of the differences is 2 and the other difference is 1
                 if (super.isValidSquare(targetCol, targetRow)){
                     return true;
                 }

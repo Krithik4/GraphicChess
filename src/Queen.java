@@ -26,12 +26,12 @@ public class Queen extends Piece {
      */
     public boolean canMove(int targetCol, int targetRow){
         if (onBoard(targetCol, targetRow) && !isSameSquare(targetCol, targetRow)){
-            if (targetCol == preCol ^ targetRow == preRow){
+            if (targetCol == preCol ^ targetRow == preRow){ //either the row or the column is the same
                 if (isValidSquare(targetCol, targetRow) && !pieceOnStraightLine(targetCol, targetRow)){
                     return true;
                 }
             }
-            if (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow)){
+            if (Math.abs(targetCol - preCol) == Math.abs(targetRow - preRow)){ //the difference between row and column are equal
                 if (isValidSquare(targetCol, targetRow) && !pieceOnDiagonalLine(targetCol, targetRow)){
                     return true;
                 }
